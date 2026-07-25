@@ -1,5 +1,5 @@
 symbol: "BTC/USDT"
-timeframe: 1min
+timeframe: "1min"
 
 data:
     source: "synthetic"
@@ -28,7 +28,8 @@ execution:
 
 server:
     host: "127.0.0.1"
-    port: "8000"
+    port: 8000
 
 database:
-    path: "trading.db"
+  url: "sqlite:///trading.db"
+  postgres_url: "postgresql://user:password@localhost:5432/trading"

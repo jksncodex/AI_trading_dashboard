@@ -53,3 +53,61 @@ class Orchestrator:
 
         self.bus.subscribe(BAR, self.on_bar)
         self.bus.subscribe(SIGNAL, self.on_signal)
+
+async def on_bar(self, bar) -> None:
+    self.portfolio.mark_price(bar.symbol, bar.close)
+    await self.bus.publish(EQUITY_UPDATE, self.portfolio.equity())
+
+async def on_signal(self, intent: Intent) -> None:
+    price = self.portfolio.last_price.get(intent.symbol)
+    if price is None:
+        return
+
+    decision = self.risk.evaluate(
+        intent, price, self.portfolio.positions, self.portfolio.cash
+    )
+
+    if not decision.approved:
+        await self.bus.publish(ORDER_REJECTED, decision.reason)
+        return
+
+    fill = await self.execution.submit(decision.order, price)
+    equity_before  = self.portfolio.equity()
+    self.portfolio.apply_fill(fill)
+    equity_after = self.portfolio.equity()
+
+    loss = equity_before - equity_after
+    if loss > 0:
+        self.risk.daily.loss += loss
+
+    await self.bus.publish(ORDER_APPROVED, decision.order)
+    await self.bus.publish(FILL, fill)
+
+async def start(self) -> None:
+    await self.feed.run()
+
+def engage_kill_switch(self) -> None:
+    self.risk.kill_switch = True
+
+def release_kill_switch(self) -> None:
+    self.risk.kill_switch = False
+
+def pause_strategy(self) -> None:
+    self.strategy.pause()
+
+def resume_strategy(self)-> None:
+    self.strategy.resume()
+
+async def flatten_all(self) -> None:
+    for symbol in list(self.portfolio.positions.keys()):
+        price = self.portfolio.last_price.get(symbol)
+        if price is None:
+            continue
+        intent = Intent(symbol, "sell")
+        decision = self.risk.evaluate(
+            intent, price, self.portfolio.positions, self.portfolio.cash
+        )
+        if decision.approved:
+            fill = await self.execution.submit(decision.order, price)
+            self.portfolio.apply_fill(fill)
+            await self.bus.publish(FILL, fill)

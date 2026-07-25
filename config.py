@@ -40,6 +40,8 @@ class ServerConfig:
 @dataclass
 class DatabaseConfig:
     path: str
+    url: str
+    postgres_url: str
 
 @dataclass
 class Config:
