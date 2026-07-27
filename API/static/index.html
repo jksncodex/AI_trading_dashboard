@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+    <title>Trading Dashboard</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            display: flex;
+            background: #0d1117;
+            color: #e6edf3;
+            font-family: Arial, sans-serif;
+        }
+
+        .sidebar {
+            width: 180px;
+            min-height: 100vh;
+            background: #161b22;
+            border-right: 1px solid #30363d;
+            padding: 20px 10px;
+        }
+
+        .sidebar h1 {
+            color: #58a6ff;
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .tab {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 4px;
+            background: none;
+            border: none;
+            border-radius: 6px;
+            color: #8b949e;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .tab:hover { background: #21262d; }
+
+        .tab.active {
+            background: #21262d;
+            color: #ffffff;
+        }
+
+        main {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .tabpage { display: none; }
+        .tabpage.active { display: block; }
+
+        .panel {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .panel h2 {
+            color: #8b949e;
+            font-size: 13px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .controls { margin-bottom: 16px; }
+
+        .controls button {
+            padding: 10px 14px;
+            margin-right: 8px;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            background: #21262d;
+            color: #e6edf3;
+            cursor: pointer;
+        }
+
+        #kill {
+            background: #da3633;
+            border-color: #da3633;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .up { color: #3fb950; }
+        .down { color: #f85149; }
+    </style>
+
+</head>
+<body>
+
+<nav class="sidebar">
+    <h1>TRADER</h1>
+    <button class="tab active" data-tab="dashboard">Dashboard</button>
+    <button class="tab" data-tab="trades">Trade Log</button>
+    <button class="tab" data-tab="backtest">Backtesting</button>
+    <button class="tab" data-tab="ai">AI Feedback</button>
+    <button class="tab" data-tab="logs">Logs</button>
+    <button class="tab" data-tab="notes">Notes</button>
+</nav>
+
+<main>
+
+    <section id="tab-dashboard" class="tabpage active">
+        <div class="controls">
+            <button id="kill">KILL SWITCH</button>
+            <button id="release">RELEASE</button>
+            <button id="flatten">FLATTEN ALL</button>
+            <button id="pause">PAUSE</button>
+            <button id="resume">RESUME</button>
+        </div>
+
+        <div class="panel">
+            <h2>Account</h2>
+            <p>Cash: <span id="cash">-</span></p>
+            <p>Equity: <span id="equity">-</span></p>
+            <p>Realised P&amp;L: <span id="realised">-</span></p>
+            <p>Status: <span id="status">-</span></p>
+        </div>
+
+        <div class="panel">
+            <h2>Positions</h2>
+            <div id="positions">None</div>
+        </div>
+
+        <div class="panel">
+            <h2>Equity Curve</h2>
+            <canvas id="curve" width="600" height="200"></canvas>
+        </div>
+
+        <div class="panel">
+            <h2>Activity</h2>
+            <div id="activity"></div>
+        </div>
+    </section>
+
+    <section id="tab-trades" class="tabpage">
+        <div class="panel">
+            <h2>Trade Log</h2>
+            <div id="fills"></div>
+        </div>
+    </section>
+
+    <section id="tab-backtest" class="tabpage">
+        <div class="panel">
+            <h2>Backtesting</h2>
+            <p>Coming in Phase 2.</p>
+        </div>
+    </section>
+
+    <section id="tab-ai" class="tabpage">
+        <div class="panel">
+            <h2>AI Feedback</h2>
+            <div id="ai"></div>
+        </div>
+    </section>
+
+    <section id="tab-logs" class="tabpage">
+        <div class="panel">
+            <h2>Logs</h2>
+            <p>App diary — wired in when logging is switched on.</p>
+        </div>
+    </section>
+
+    <section id="tab-notes" class="tabpage">
+        <div class="panel">
+            <h2>Notes</h2>
+            <p>Your notes area — coming later.</p>
+        </div>
+    </section>
+
+</main>
+
+<script>
+    const tabs = document.querySelectorAll(".tab");
+    const pages = document.querySelectorAll(".tabpage");
+
+    tabs.forEach(function (tab) {
+        tab.addEventListener("click", function () {
+            tabs.forEach(function (t) { t.classList.remove("active"); });
+            pages.forEach(function (p) { p.classList.remove("active"); });
+            tab.classList.add("active");
+            document.getElementById("tab-" + tab.dataset.tab).classList.add("active");
+        });
+    });
+</script>
+
+</body>
+</html>
